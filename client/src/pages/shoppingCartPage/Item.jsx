@@ -62,7 +62,7 @@ const Item = ({
     <div className="item">
       <div className="itemTop">
         <img
-          className="roomImg"
+          className="roomImg "
           src="shoppingCart/roomImg.png"
           alt="Room Image"
         />

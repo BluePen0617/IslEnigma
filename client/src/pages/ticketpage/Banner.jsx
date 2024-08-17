@@ -36,7 +36,7 @@ function Banner({
 				closeCalendar();
 			}}
 		>
-			<LogoArea imgLogo={imgLogo} areaName={"訂票服務"} />
+			<LogoArea imgLogo={imgLogo} areaName={"訂票資訊"} />
 			<img src={imgBanner} alt="" className="imgBackground" />
 			<div className="divSafe">
 				<h5>*為安全起見，園區內設施限制 18 歲以上方能搭乘</h5>

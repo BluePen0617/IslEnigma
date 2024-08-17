@@ -1,46 +1,43 @@
-import { useEffect, useState } from "react"
-import { Link, useLocation } from "react-router-dom"
-import axios from "axios"
-import { useCartItemsData } from "../../hooks/useCartItem"
-import { useUpdateQty } from "../../hooks/useUpdateQty"
-import { useRemoveCartItem } from "../../hooks/useDeleteItem"
-import CartItem from "./CartItem"
-import arrow from "/shoppingCart/breadcrumbArrow.png"
-import "./shoppingCart.scss"
+import { useEffect, useState } from "react";
+import { Link, useLocation } from "react-router-dom";
+import axios from "axios";
+import { useCartItemsData } from "../../hooks/useCartItem";
+import { useUpdateQty } from "../../hooks/useUpdateQty";
+import { useRemoveCartItem } from "../../hooks/useDeleteItem";
+import CartItem from "./CartItem";
+import arrow from "/shoppingCart/breadcrumbArrow.png";
+import "./shoppingCart.scss";
 
 const ShoppingCartPage = () => {
-  const { mutate: removeCartItem } = useRemoveCartItem()
-  const { data, error, isLoading } = useCartItemsData()
-  const [cartData, setCartData] = useState([])
+  const { mutate: removeCartItem } = useRemoveCartItem();
+  const { data, error, isLoading } = useCartItemsData();
+  const [cartData, setCartData] = useState([]);
 
-  const location = useLocation()
+  const location = useLocation();
 
   const handleDelete = async (itemId) => {
-    await axios.delete(`http://localhost:3001/cart/${itemId}`)
-    removeCartItem(itemId) // Ensure UI reflects the deletion
-  }
+    await axios.delete(`http://localhost:3001/cart/${itemId}`);
+    removeCartItem(itemId); // Ensure UI reflects the deletion
+  };
 
   useEffect(() => {
     if (data && data.order_item) {
       const sortedItems = data.order_item.sort((a, b) => {
-        // Compare by room_id first
-        if (a.room_id < b.room_id) return -1
-        if (a.room_id > b.room_id) return 1
+        if (a.room_id < b.room_id) return -1;
+        if (a.room_id > b.room_id) return 1;
 
-        // If room_id is the same, compare by ticket_id
-        if (a.ticket_id < b.ticket_id) return -1
-        if (a.ticket_id > b.ticket_id) return 1
+        if (a.ticket_id < b.ticket_id) return -1;
+        if (a.ticket_id > b.ticket_id) return 1;
 
-        return 0 // If both room_id and ticket_id are the same
-      })
+        return 1;
+      });
 
-      setCartData(sortedItems)
-      console.log(sortedItems)
+      setCartData(sortedItems);
+      console.log(sortedItems);
     }
-  }, [data])
+  }, [data]);
 
-  if (isLoading) return <p>Loading...</p>
-
+  if (isLoading) return <p>Loading...</p>;
   return (
     <div className="shoppingCart">
       <div className="apple"></div>
@@ -61,11 +58,11 @@ const ShoppingCartPage = () => {
               NT$
               {cartData.length > 0
                 ? cartData.reduce((total, item) => {
-                    const roomPrice = item.room?.price || 0
-                    const ticketPrice = item.ticket?.price || 0
+                    const roomPrice = item.room?.price || 0;
+                    const ticketPrice = item.ticket?.price || 0;
                     const itemTotal =
-                      roomPrice * item.quantity + ticketPrice * item.quantity
-                    return total + itemTotal
+                      roomPrice * item.quantity + ticketPrice * item.quantity;
+                    return total + itemTotal;
                   }, 0)
                 : 0}
             </span>
@@ -97,7 +94,7 @@ const ShoppingCartPage = () => {
         </div>
       </div>
     </div>
-  )
-}
+  );
+};
 
-export default ShoppingCartPage
+export default ShoppingCartPage;

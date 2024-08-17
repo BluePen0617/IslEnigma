@@ -8,6 +8,8 @@ function ShopMore({ shop_more }) {
 				<Button btnContent={"查看更多 >"} />
 			</a>
 		);
+	}else{
+		return null
 	}
 }
 

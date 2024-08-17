@@ -1,17 +1,17 @@
-import { FaCampground, FaDisease } from "react-icons/fa6";
-import { PiIslandFill } from "react-icons/pi";
-import { FaStarAndCrescent } from "react-icons/fa6";
-import { GiFallingStar } from "react-icons/gi";
-import { GiGrass } from "react-icons/gi";
+import { FaCampground, FaDisease } from "react-icons/fa6"
+import { PiIslandFill } from "react-icons/pi"
+import { FaStarAndCrescent } from "react-icons/fa6"
+import { GiFallingStar } from "react-icons/gi"
+import { GiGrass } from "react-icons/gi"
 
-import { FaShoePrints } from "react-icons/fa6";
-import ReservationModal from "./ReservationModal";
-import { useState } from "react";
+import { FaShoePrints } from "react-icons/fa6"
+import ReservationModal from "./ReservationModal"
+import { useState } from "react"
+import ConfPopup from "./ConfPopup"
 
 const Banner = () => {
-  const [toggleReservation, setToggleReservation] = useState(false);
-
-  console.log(toggleReservation);
+  const [toggleReservation, setToggleReservation] = useState(false)
+  const [showConfPopup, setShowConfPopup] = useState(false)
 
   return (
     <div id="roomBanner" class="bannerWrapper">
@@ -71,7 +71,7 @@ const Banner = () => {
           <a
             class="primaryButton"
             onClick={() => {
-              setToggleReservation(!toggleReservation);
+              setToggleReservation(!toggleReservation)
             }}
           >
             <i class="fa-regular fa-calendar-plus"></i>快速預約
@@ -84,14 +84,20 @@ const Banner = () => {
         <FaShoePrints className="footprint footprint-right" />
         <FaShoePrints className="footprint footprint-left" />
       </div>
-      {toggleReservation && (
-        <ReservationModal
-          toggleReservation={toggleReservation}
-          setToggleReservation={setToggleReservation}
-        />
-      )}
+      <ReservationModal
+        toggleReservation={toggleReservation}
+        setToggleReservation={setToggleReservation}
+        setShowConfPopup={setShowConfPopup}
+      />
+      {/* <ConfPopup
+        roomTypeName={queryData.roomType}
+        checkInDate={formattedDate(queryData.dateRange[0])}
+        checkOutDate={formattedDate(queryData.dateRange[1])}
+        onClose={() => setShowConfPopup(false)}
+        isVisible={showConfPopup}
+      /> */}
     </div>
-  );
-};
+  )
+}
 
-export default Banner;
+export default Banner

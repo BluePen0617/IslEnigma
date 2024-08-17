@@ -5,7 +5,7 @@ const ConfPopup = ({
   onClose,
   isVisible,
 }) => {
-  if (!isVisible) return null;
+  if (!isVisible) return null
 
   return (
     <div id="cartConfirmationPopup" className="popupOverlay active">
@@ -44,7 +44,7 @@ const ConfPopup = ({
         </button>
       </div>
     </div>
-  );
-};
+  )
+}
 
-export default ConfPopup;
+export default ConfPopup

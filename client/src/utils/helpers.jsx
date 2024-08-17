@@ -23,3 +23,7 @@ export const checkCardType = (data) => {
       return mastercardIcon
   }
 }
+
+export const formatCardNumber = (value) => {
+  return value.replace(/\D/g, "").replace(/(\d{4})(?=\d)/g, "$1-")
+}

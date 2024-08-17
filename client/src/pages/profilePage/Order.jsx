@@ -13,72 +13,109 @@ const Order = () => {
     setOrderPeople(targetOrder.orderPeople)
     setOpenModal(true)
   }
+
   if (isLoading) return <div>isLoading..</div>
+
+  const groupedOrders = orderData.reduce((acc, item) => {
+    const key = item.room_type ? "room" : "ticket"
+    if (!acc[key]) {
+      acc[key] = []
+    }
+    acc[key].push(item)
+    return acc
+  }, {})
 
   return (
     <div id="orderContent" style={{ display: "flex" }}>
-      {orderData.length === 0 ? (
-        <div class="none-container">
+      {Object.keys(groupedOrders).length === 0 ? (
+        <div className="none-container">
           <img
-            class="none-picture"
+            className="none-picture"
             src="/00logo/LOGO_Colorful_1.png"
             alt="PayMethod Image"
           />
           <p id="none-text">沒有任何訂單</p>
-          <button class="submit-btn" id="addPayMethod">
+          <button className="submit-btn" id="addPayMethod">
             前往訂票
           </button>
         </div>
       ) : (
-        <div class="order-tables-container">
-          {orderData.map((data) => {
-            return (
-              <>
-                <h2 class="order-table-title" key={data.id}>
-                  {data.room_type ? "訂房資訊" : "訂票資訊"}
-                </h2>
-                <table class="order-table">
-                  <thead>
-                    <tr>
-                      <th>訂單編號</th>
-                      <th>{data.room_type ? "房型" : "票種"}</th>
-                      <th>金額</th>
-                      <th>{data.room_type ? "入住日期" : "入場日期"}</th>
-                      <th>數量</th>
-                      <th>操作</th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    <tr>
+        <div className="order-tables-container">
+          {groupedOrders.room && (
+            <>
+              <h2 className="order-table-title">訂房資訊</h2>
+              <table className="order-table__room">
+                <thead>
+                  <tr>
+                    <th>訂單編號</th>
+                    <th>房型</th>
+                    <th>金額</th>
+                    <th>入住日期</th>
+                    <th>退房日期</th>
+                    <th>數量</th>
+                    <th>操作</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {groupedOrders.room.map((data) => (
+                    <tr key={data.order_id}>
                       <td data-label="訂單ID">{data.order_id}</td>
-                      <td data-label="房型">
-                        {data.room_type || data.ticket_type}
-                      </td>
+                      <td data-label="房型">{data.room_type}</td>
                       <td data-label="金額">{data.amount}</td>
-                      <td class="date-cell" data-label="日期">
-                        {data.room_type
-                          ? `入住 : ${data.checkin_date}`
-                          : data.checkin_date}
-                        <br />
-                        {data.room_type ? `退房 : ${data.checkout_date}` : ""}
-                      </td>
+                      <td data-label="入住日期">{data.checkin_date}</td>
+                      <td data-label="退房日期">{data.checkout_date}</td>
                       <td data-label="數量">{data.quantity}</td>
                       <td data-label="操作">
                         <button
                           className="seeMore-btn"
-                          onClick={() => {
-                            handleShowModal(data.order_id)
-                          }}
+                          onClick={() => handleShowModal(data.order_id)}
                         >
                           查看更多
                         </button>
                       </td>
                     </tr>
-                  </tbody>
-                </table>
-              </>
-            )
-          })}
+                  ))}
+                </tbody>
+              </table>
+            </>
+          )}
+
+          {groupedOrders.ticket && (
+            <>
+              <h2 className="order-table-title">訂票資訊</h2>
+              <table className="order-table__ticket">
+                <thead>
+                  <tr>
+                    <th>訂單編號</th>
+                    <th>票種</th>
+                    <th>金額</th>
+                    <th>入場日期</th>
+                    <th>數量</th>
+                    <th>操作</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {groupedOrders.ticket.map((data) => (
+                    <tr key={data.order_id}>
+                      <td data-label="訂單ID">{data.order_id}</td>
+                      <td data-label="票種">{data.ticket_type}</td>
+                      <td data-label="金額">{data.amount}</td>
+                      <td data-label="入場日期">{data.checkin_date}</td>
+                      <td data-label="數量">{data.quantity}</td>
+                      <td data-label="操作">
+                        <button
+                          className="seeMore-btn"
+                          onClick={() => handleShowModal(data.order_id)}
+                        >
+                          查看更多
+                        </button>
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </>
+          )}
         </div>
       )}
       <ProfileModal

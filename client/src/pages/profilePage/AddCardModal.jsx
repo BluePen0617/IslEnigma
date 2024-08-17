@@ -1,29 +1,33 @@
-import { useForm } from "react-hook-form";
-import { useUpdateCard } from "../../hooks/useUpdateCard";
+import { useForm } from "react-hook-form"
+import { useUpdateCard } from "../../hooks/useUpdateCard"
 
 const AddCardModal = ({ openModal, setOpenModal }) => {
-	const { mutate: updateCard, isLoading: loadingUpdate } = useUpdateCard();
+  const { mutate: updateCard, isLoading: loadingUpdate } = useUpdateCard()
 
-	const {
-		register,
-		handleSubmit,
-		formState: { errors },
-	} = useForm();
-
+  const {
+    register,
+    handleSubmit,
+    formState: { errors },
+  } = useForm()
 
   const formatCardNumber = (value) => {
     return value.replace(/\D/g, "").replace(/(\d{4})(?=\d)/g, "$1-")
   }
 
   const onSubmit = (data) => {
-    updateCard(data, {
+    const newData = {
+      ...data,
+      cardNumber: data.cardNumber.replace(/-/g, ""),
+    }
+
+    updateCard(newData, {
       onSuccess: () => setOpenModal(false),
     })
   }
-
+  if (!openModal) return
   return (
     <div className="modal" id="addPayMethodModal">
-      <div className="modal-content">
+      <div className="modal-content__profile">
         <span className="close-btn" onClick={() => setOpenModal(false)}>
           ×
         </span>
@@ -98,5 +102,4 @@ const AddCardModal = ({ openModal, setOpenModal }) => {
   )
 }
 
-
-export default AddCardModal;
+export default AddCardModal

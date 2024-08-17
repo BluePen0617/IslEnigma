@@ -22,6 +22,7 @@ const getOrder = async (req, res) => {
 }
 
 const getPayMethod = async (req, res) => {
+  console.log(req.body)
   try {
     const memberID = req.user.id
     const payMethods = await payMethod.read(memberID)
@@ -37,6 +38,8 @@ const getPayMethod = async (req, res) => {
   }
 }
 const postPayMethod = async (req, res) => {
+  console.log(req.body)
+  console.log(req.body.payMethodData)
   try {
     const memberID = req.user.id
     const payMethodData = req.body
@@ -120,38 +123,47 @@ const changePassword = async (req, res) => {
 async function transformOrderData(orders) {
   const transformedData = await Promise.all(
     orders.map(async (order) => {
-      const transformedOrder = {
-        order_id: order.order_id.toString(),
-        order_type: order.orderItems[0].room_id === null ? "ticket" : "room",
-        amount: order.total_amount.toString(),
-        checkin_date: formatDate(order.orderItems[0].check_in_date),
-        checkout_date: order.orderItems[0].check_out_date
-          ? formatDate(order.orderItems[0].check_out_date)
-          : null,
-        quantity: order.orderItems[0].quantity.toString(),
-        orderPeople: {
-          customer: order.orderInfo.customer,
-          phone: order.orderInfo.phone_number,
-          address: order.orderInfo.address,
-          payment_method: order.orderInfo.payment_method,
-        },
-      }
-      if (transformedOrder.order_type === "room") {
-        transformedOrder.room_type = await fetchType(
-          room.read,
-          order.orderItems[0].room_id
-        )
-      } else {
-        transformedOrder.ticket_type = await fetchType(
-          ticket.read,
-          order.orderItems[0].ticket_id
-        )
-      }
-      return transformedOrder
+      const orderAmount = order.total_amount.toString()
+
+      const transformedItems = await Promise.all(
+        order.orderItems.map(async (item) => {
+          const isRoom = item.room_id !== null
+          const transformedItem = {
+            order_id: order.order_id.toString(),
+            order_type: isRoom ? "room" : "ticket",
+            amount: orderAmount, // 使用整個訂單的總金額
+            checkin_date: formatDate(item.check_in_date),
+            checkout_date: item.check_out_date
+              ? formatDate(item.check_out_date)
+              : null,
+            quantity: item.quantity.toString(),
+            orderPeople: {
+              customer: order.orderInfo.customer,
+              phone: order.orderInfo.phone_number,
+              address: order.orderInfo.address,
+              payment_method: order.orderInfo.payment_method,
+            },
+          }
+
+          if (isRoom) {
+            transformedItem.room_type = await fetchType(room.read, item.room_id)
+          } else {
+            transformedItem.ticket_type = await fetchType(
+              ticket.read,
+              item.ticket_id
+            )
+          }
+
+          return transformedItem
+        })
+      )
+
+      return transformedItems
     })
   )
 
-  return transformedData
+  // 將嵌套數組展平
+  return transformedData.flat()
 }
 
 function formatDate(date) {

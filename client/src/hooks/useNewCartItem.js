@@ -19,12 +19,9 @@ export const newCartItem = async (data) => {
 export const useNewCartItem = () => {
   return useMutation({
     mutationFn: newCartItem,
-    onSuccess: (data) => {
-      toast(data)
-    },
+    onSuccess: (data) => {},
     onError: (error) => {
       const errMsg = error.response?.data || "發生錯誤!"
-      console.log(errMsg)
       toast.error(errMsg)
     },
   })

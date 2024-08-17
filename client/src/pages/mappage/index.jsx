@@ -26,7 +26,7 @@ function MapPage() {
 		<div
 			className="mapPage"
 		>
-			<LogoArea imgLogo={imgLogo} areaName={"園區導覽"} />
+			<LogoArea imgLogo={imgLogo} areaName={"樂園設施"} />
 			<Map isSticky={isSticky} />
 		</div>
 	);
