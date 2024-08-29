@@ -25,12 +25,8 @@ export const useUpdateMember = () => {
   return useMutation({
     mutationFn: updateMember,
     onSuccess: (data) => {
-        // const { message, member } = data
-        // toast(message)
-        // localStorage.setItem("member", JSON.stringify(member))
-        // setMember(member)
-        // navigate("/rooms")
       console.log(data)
+      toast(data.message)
     },
     onError: (error) => {
       const errMsg = error || "發生錯誤!"

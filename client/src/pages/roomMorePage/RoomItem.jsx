@@ -1,26 +1,83 @@
-//引入useState hook
-import React, { useState } from "react";
+import React, { useEffect, useMemo, useState, useCallback } from "react";
 import { Carousel } from "react-bootstrap";
-//在組件內部使用 useState hook 來定義 activeIndex 狀態和 setActiveIndex 函數
-const RoomItem = ({ room, index }) => {
-  const [activeIndex, setActiveIndex] = useState(0);
+import "react-calendar/dist/Calendar.css";
+import BookingModal from "./BookingModal";
+import { useQueryRoomsDate } from "../../hooks/useSearchBookedDate";
+import { generateDateRange } from "../../utils/helpers";
+import { useNewCartItem } from "../../hooks/useNewCartItem";
+import ConfPopup from "../roomPage/ConfPopup";
 
-  // 輔助函數來處理icon名稱
-  const getIconClass = (iconName) => {
-    // 移除 'fa-' 前綴（如果存在）
+const RoomCarousel = React.memo(({ images }) => {
+  const [activeIndex, setActiveIndex] = useState(0);
+  const [totalPrice, setTotalPrice] = useState(0);
+
+  const handleSelect = useCallback((selectedIndex) => {
+    setActiveIndex(selectedIndex);
+  }, []);
+
+  const handleThumbnailClick = useCallback((index) => {
+    setActiveIndex(index);
+  }, []);
+  return (
+    <div className="roomCarousel">
+      <Carousel activeIndex={activeIndex} onSelect={handleSelect}>
+        {images.map((img, imgIndex) => (
+          <Carousel.Item key={imgIndex}>
+            <img
+              src={img}
+              alt={`房間圖片 ${imgIndex + 1}`}
+              className="d-block w-100"
+            />
+          </Carousel.Item>
+        ))}
+      </Carousel>
+      <div className="thumbnails">
+        {images.slice(1).map((img, i) => (
+          <img
+            key={i}
+            src={img}
+            alt={`縮略圖 ${i + 2}`}
+            onClick={() => handleThumbnailClick(i + 1)}
+          />
+        ))}
+      </div>
+    </div>
+  );
+});
+
+// 主要的 RoomItem 組件
+const RoomItem = React.memo(({ room, index }) => {
+  const [toggleBookingModal, setToggleBookingModal] = useState(false);
+  const [bookedDate, setBookedDate] = useState([]);
+
+  const {
+    mutate: searchRoomsDate,
+    isLoading,
+    data: bookedDatesData,
+  } = useQueryRoomsDate();
+
+  const {
+    mutate: newCartItem,
+    isLoading: addingItem,
+    data: item,
+    errors,
+  } = useNewCartItem();
+
+  const handleOpenCalendar = useCallback(
+    (index) => {
+      searchRoomsDate(index);
+      setToggleBookingModal(true);
+    },
+    [searchRoomsDate, room.id]
+  );
+
+  const getIconClass = useCallback((iconName) => {
     const cleanName = iconName.replace(/^fa-/, "");
-    // 如果包含 'fa-solid'，使用 'fas'，否則使用 'fa'
     const prefix = iconName.includes("fa-solid") ? "fas" : "fa";
     return `${prefix} fa-${cleanName}`;
-  };
+  }, []);
 
-  // 處理縮略圖點擊
-  const handleThumbnailClick = (index) => {
-    setActiveIndex(index);
-  };
-
-  // 輔助函數來決定背景圖類名
-  const getBackgroundImageClass = (roomType) => {
+  const getBackgroundImageClass = useCallback((roomType) => {
     switch (roomType) {
       case "Grass Tempo":
         return "backgroundImageGrass";
@@ -33,36 +90,34 @@ const RoomItem = ({ room, index }) => {
       default:
         return "";
     }
-  };
+  }, []);
+
+  useEffect(() => {
+    if (bookedDatesData) {
+      const allBookedDates = bookedDatesData.flatMap(
+        ({ check_in_date, check_out_date }) =>
+          generateDateRange(
+            new Date(check_in_date),
+            new Date(check_out_date)
+          ).map((date) => new Date(date))
+      );
+      setBookedDate(allBookedDates);
+    }
+  }, [bookedDatesData]);
+
+  const memoizedRoomCarousel = useMemo(
+    () => <RoomCarousel images={room.images} />,
+    [room.images]
+  );
+
+  if (isLoading) return <div>Loading..</div>;
 
   return (
     <div
       id={room.roomTypeEng.toLowerCase().replace(/\s+/g, "")}
       className={`roomItem ${index % 2 === 0 ? "even" : "odd"}`}
     >
-      <div className="roomCarousel">
-        <Carousel activeIndex={activeIndex} onSelect={setActiveIndex}>
-          {room.images.map((img, imgIndex) => (
-            <Carousel.Item key={imgIndex}>
-              <img
-                src={img}
-                alt={`房間圖片 ${imgIndex + 1}`}
-                className="d-block w-100"
-              />
-            </Carousel.Item>
-          ))}
-        </Carousel>
-        <div className="thumbnails">
-          {room.images.slice(1).map((img, i) => (
-            <img
-              key={i}
-              src={img}
-              alt={`縮略圖 ${i + 2}`}
-              onClick={() => handleThumbnailClick(i + 1)}
-            />
-          ))}
-        </div>
-      </div>
+      {memoizedRoomCarousel}
       <div className="roomInfo">
         <div className={getBackgroundImageClass(room.roomTypeEng)}></div>
         <h2 className="roomTypeEng">{room.roomTypeEng}</h2>
@@ -90,10 +145,31 @@ const RoomItem = ({ room, index }) => {
           <a href="#roomFacilities" className="checkFacilities">
             查看設備
           </a>
+          <button
+            onClick={() => {
+              handleOpenCalendar(index);
+            }}
+            className="checkFacilities"
+          >
+            立即預約
+          </button>
+          <div
+            className={`roomsPage ${toggleBookingModal ? "modal-open" : ""}`}
+          >
+            <BookingModal
+              toggleBookingModal={toggleBookingModal}
+              setToggleBookingModal={setToggleBookingModal}
+              index={index}
+              bookedDate={bookedDate}
+              roomId={index}
+              price={room.price}
+              roomType={room.roomType}
+            />
+          </div>
         </div>
       </div>
     </div>
   );
-};
+});
 
 export default RoomItem;

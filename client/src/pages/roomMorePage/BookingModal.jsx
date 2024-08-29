@@ -1,46 +1,29 @@
-import { useEffect, useState, useMemo } from "react"
-import ConfPopup from "./ConfPopup"
-
-// date range picker
-import "@wojtekmaj/react-daterange-picker/dist/DateRangePicker.css"
-// import "react-calendar/dist/Calendar.css"
 import DateRangePicker from "@wojtekmaj/react-daterange-picker"
-import { useQueryRooms } from "../../hooks/useQueryRooms"
+import ConfPopup from "../roomPage/ConfPopup"
+import { useState, useEffect, useMemo } from "react"
 import { useNewCartItem } from "../../hooks/useNewCartItem"
 import { useAuthContext } from "../../context/AuthContext"
-import { useCartItemsData } from "../../hooks/useCartItem"
 
-const ReservationModal = ({ toggleReservation, setToggleReservation }) => {
+const BookingModal = ({
+  toggleBookingModal,
+  setToggleBookingModal,
+  bookedDate,
+  roomId,
+  price,
+  roomType,
+}) => {
   const { member } = useAuthContext()
+  const [showConfPopup, setShowConfPopup] = useState(false)
 
-  const disabledDates = [new Date(2024, 9, 15), new Date(2024, 9, 16)]
-
-  function isDateDisabled(date) {
-    return disabledDates.some(
-      (disabledDate) => date.toDateString() === disabledDate.toDateString()
-    )
-  }
-
-  const {
-    data: cartItems,
-    error,
-    isLoading: loadingCartItem,
-  } = useCartItemsData()
-  const { mutate: queryRooms, isLoading, data } = useQueryRooms()
-
-  const today = useMemo(() => {
-    const date = new Date()
-    date.setHours(0, 0, 0, 0)
-    return date
-  }, [])
   const {
     mutate: newCartItem,
     isLoading: addingItem,
     data: item,
     errors,
   } = useNewCartItem()
-  const [totalPrice, setTotalPrice] = useState(0)
   const [value, onChange] = useState([])
+  const [totalPrice, setTotalPrice] = useState(0)
+
   const [queryData, setQueryData] = useState({
     dateRange: [],
     roomCount: 1,
@@ -48,9 +31,21 @@ const ReservationModal = ({ toggleReservation, setToggleReservation }) => {
     roomType: "",
     roomId: null,
   })
+  const [selectedDates, setSelectedDates] = useState([null, null])
+  const today = useMemo(() => {
+    const date = new Date()
+    date.setHours(0, 0, 0, 0)
+    return date
+  }, [])
 
-  const [hasSearched, setHasSearched] = useState(false)
-
+  const disableBookedDates = ({ date }) => {
+    return bookedDate.some(
+      (bookedDate) =>
+        bookedDate.getFullYear() === date.getFullYear() &&
+        bookedDate.getMonth() === date.getMonth() &&
+        bookedDate.getDate() === date.getDate()
+    )
+  }
   const formatLocalDate = (date) => {
     if (!date) return ""
     return date.toLocaleDateString({
@@ -59,14 +54,6 @@ const ReservationModal = ({ toggleReservation, setToggleReservation }) => {
       day: "numeric",
     })
   }
-
-  const formattedDate = (date) => {
-    if (!date) return ""
-
-    const formattedDate = new Date(date).toISOString()
-    return formattedDate
-  }
-
   const handleUpdate = (e) => {
     const { name, className } = e.target
 
@@ -93,45 +80,28 @@ const ReservationModal = ({ toggleReservation, setToggleReservation }) => {
     })
   }
 
-  const handleSearch = () => {
-    setTotalPrice(0)
-    queryRooms(queryData)
-    setHasSearched(true)
+  // const handleDateChange = (dates) => {
+  //   setSelectedDates(dates)
+  //   console.log("Selected Dates:", dates)
+  // }
+  useEffect(() => {
+    // const price = selectedOption.getAttribute("data-price")
 
-    setQueryData((prev) => ({
-      ...prev,
-      roomType: "",
-      roomId: null,
-    }))
-  }
+    if (value && value.length === 2) {
+      setQueryData((prev) => ({
+        ...prev,
+        dateRange: value,
+        roomId: roomId + 1,
+        roomType,
+        price,
+      }))
+    }
+  }, [value])
 
-  const validateSearch = () => {
-    const { dateRange } = queryData
-    return dateRange.length === 0
-  }
-
-  const handleSelect = (e) => {
-    const selectedOption = e.target.options[e.target.selectedIndex]
-    const price = selectedOption.getAttribute("data-price")
-    const roomType = selectedOption.getAttribute("data-name")
-    const roomId = parseInt(selectedOption.value)
-
-    setQueryData((prev) => ({
-      ...prev,
-      roomType,
-      roomId,
-      price,
-    }))
-    setTotalPrice(price)
-  }
-
-  const [showConfPopup, setShowConfPopup] = useState(false)
   const handleAddCart = () => {
-    const orderId = cartItems?.order_id
     const itemData = {
       ...queryData,
       quantity: 1,
-      order_id: orderId,
     }
 
     //新增商品到localStorage
@@ -140,10 +110,8 @@ const ReservationModal = ({ toggleReservation, setToggleReservation }) => {
 
       const existingCartData = JSON.parse(localStorage.getItem("cart")) || []
 
-      // 生成唯一商品ID（基于当前时间戳）
       const itemId = Date.now()
 
-      // 给 itemData 加上一个 id
       const itemDataWithId = {
         ...itemData,
         id: itemId,
@@ -153,15 +121,26 @@ const ReservationModal = ({ toggleReservation, setToggleReservation }) => {
 
       localStorage.setItem("cart", JSON.stringify(existingCartData))
       setShowConfPopup(true)
-      setToggleReservation(false)
-
+      setToggleBookingModal(false)
+      setQueryData(() => ({
+        dateRange: [],
+        roomCount: 1,
+        people: 1,
+        roomType: "",
+        roomId: null,
+      }))
       return
     }
 
     newCartItem(itemData, {
       onSuccess: () => {
         setShowConfPopup(true)
-        setToggleReservation(false)
+        setToggleBookingModal(false)
+        setQueryData((prev) => ({
+          ...prev,
+          roomType: "",
+          roomId: null,
+        }))
       },
       onError: (error) => {
         console.log(error)
@@ -169,24 +148,23 @@ const ReservationModal = ({ toggleReservation, setToggleReservation }) => {
     })
   }
 
-  useEffect(() => {
-    if (value && value.length === 2) {
-      setQueryData((prev) => ({
-        ...prev,
-        dateRange: value,
-      }))
-    }
-  }, [value])
-
   return (
     <>
-      {toggleReservation && (
+      <ConfPopup
+        roomTypeName={roomType}
+        checkInDate={formatLocalDate(queryData.dateRange[0])}
+        checkOutDate={formatLocalDate(queryData.dateRange[1])}
+        onClose={() => setShowConfPopup(false)}
+        isVisible={showConfPopup}
+      />
+
+      {toggleBookingModal && (
         <div id="quickReservationModal" className="quickModal">
           <div className="quickModalContent">
             <span
               className="closeQuickModal"
               onClick={() => {
-                setToggleReservation(false)
+                setToggleBookingModal(false)
               }}
             >
               &times;
@@ -206,18 +184,40 @@ const ReservationModal = ({ toggleReservation, setToggleReservation }) => {
                   shouldCloseCalendar={({ reason }) =>
                     reason !== "outsideAction"
                   }
+                  calendarProps={{
+                    tileDisabled: disableBookedDates,
+                  }}
                   locale="en-us"
+                  onCalendarOpen={() => {
+                    return handleOpenCalendar(index)
+                  }}
                   minDate={today}
-                  disabledDates={disabledDates}
                 />
+
+                {/* <DateRangePicker
+            onChange={handleDateChange}
+            value={selectedDates}
+            clearIcon={false}
+            closeCalendar={false}
+            disableCalendar={false}
+            shouldCloseCalendar={({ reason }) => reason !== "outsideAction"}
+            locale="en-us"
+            calendarProps={{
+              tileDisabled: disableBookedDates,
+            }}
+            onCalendarOpen={() => {
+              handleOpenCalendar(index)
+            }}
+            minDate={today}
+          /> */}
               </div>
-              <a
+              {/* <a
                 className="buttonSearch"
-                onClick={handleSearch}
-                disabled={validateSearch()}
+                // onClick={handleSearch}
+                // disabled={validateSearch()}
               >
                 搜索 <i className="bi bi-search"></i>
-              </a>
+              </a> */}
             </div>
             <div className="modalRight">
               <div className="reservationForm">
@@ -301,18 +301,18 @@ const ReservationModal = ({ toggleReservation, setToggleReservation }) => {
                     <input
                       type="text"
                       id="totalPriceInput"
-                      value={totalPrice}
+                      value={price}
                       readOnly
                     />
                   </div>
                 </div>
-                {data && (
+                {/* {data && (
                   <div className="roomTypeSelectWrapper">
                     <select
                       id="roomTypeSelect"
                       className="roomTypeSelect"
-                      onChange={handleSelect}
-                      value={queryData.roomId || ""}
+                      //   onChange={handleSelect}
+                      //   value={queryData.roomId || ""}
                     >
                       <option value="" disabled>
                         選擇房型
@@ -329,11 +329,11 @@ const ReservationModal = ({ toggleReservation, setToggleReservation }) => {
                       ))}
                     </select>
                   </div>
-                )}
+                )} */}
                 <button
                   id="searchResults"
                   onClick={handleAddCart}
-                  disabled={!queryData.roomId}
+                  disabled={!queryData.dateRange.length}
                 >
                   加入購物車
                 </button>
@@ -342,15 +342,15 @@ const ReservationModal = ({ toggleReservation, setToggleReservation }) => {
           </div>
         </div>
       )}
-      <ConfPopup
+      {/* <ConfPopup
         roomTypeName={queryData.roomType}
         checkInDate={formatLocalDate(queryData.dateRange[0])}
         checkOutDate={formatLocalDate(queryData.dateRange[1])}
         onClose={() => setShowConfPopup(false)}
         isVisible={showConfPopup}
-      />
+      /> */}
     </>
   )
 }
 
-export default ReservationModal
+export default BookingModal

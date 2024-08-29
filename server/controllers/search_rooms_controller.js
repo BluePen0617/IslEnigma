@@ -1,7 +1,5 @@
 const { PrismaClient } = require("@prisma/client")
 const prisma = new PrismaClient()
-const startDate = new Date("2024-08-20")
-const endDate = new Date("2024-08-21")
 const search_rooms_controller = async (req, res) => {
   const { dateRange, roomCount, people } = req.body
   console.log(dateRange)
@@ -21,11 +19,10 @@ const search_rooms_controller = async (req, res) => {
       room: true,
     },
   })
-
-  console.log(paidOrderItems)
   const room_ids = paidOrderItems
     .map((item) => item.room_id)
     .filter((id) => id !== null)
+
   const allRooms = await prisma.room.findMany()
   const availableRooms = allRooms.filter(
     (room) => !room_ids.includes(room.room_id)
@@ -34,7 +31,6 @@ const search_rooms_controller = async (req, res) => {
   const filteredRooms = availableRooms.filter((room) => {
     const capacity = room.capacity >= people
     const room_count = room.room_count >= roomCount
-
     return capacity && room_count
   })
 

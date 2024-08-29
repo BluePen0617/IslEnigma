@@ -1,3 +1,5 @@
+import { Link } from "react-router-dom"
+
 const ConfPopup = ({
   roomTypeName,
   checkInDate,
@@ -11,7 +13,7 @@ const ConfPopup = ({
     <div id="cartConfirmationPopup" className="popupOverlay active">
       <div className="popupContent">
         <img
-          src="./public/00myIcon/booking-info.png"
+          src="/00myIcon/booking-info.png"
           alt="Tent Icon"
           className="tentIcon"
         />
@@ -32,9 +34,9 @@ const ConfPopup = ({
             <i className="bi bi-youtube"></i>
           </a>
         </div>
-        <a href="/login" id="goToCartBtn" className="actionBtn">
+        <Link to="/cart" id="goToCartBtn" className="actionBtn">
           前往購物車
-        </a>
+        </Link>
         <button
           id="continueShoppingBtn"
           className="actionBtn secondary"

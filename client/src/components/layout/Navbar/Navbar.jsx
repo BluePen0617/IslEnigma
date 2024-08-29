@@ -15,7 +15,7 @@ const Navbar = () => {
   const [isPlaying, setIsPlaying] = useState(false)
   const [toggleNavbar, setToggleNavbar] = useState(false)
 
-  // 音樂: 我用audio播不出來所以用這個方法
+  //撥放主題音樂
   const music = useRef(new Audio(sound))
 
   const togglePlayPause = () => {

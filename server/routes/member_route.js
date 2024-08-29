@@ -18,7 +18,7 @@ const {
 
 router.post("/login", login_controller.login)
 router.post("/register", register_controller.register)
-router.post("/logout", logout_controller)
+router.post("/logout", verifyToken, logout_controller)
 router.get("/order", verifyToken, getOrder)
 
 router.get("/payMethod", verifyToken, getPayMethod)

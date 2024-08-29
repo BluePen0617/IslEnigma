@@ -2,13 +2,9 @@ import { useForm } from "react-hook-form"
 import { useMemberInfo } from "../../hooks/useMemberInfo"
 import { useUpdateMember } from "../../hooks/useUpdateMember"
 import { useEffect } from "react"
-
+import { formatDate, formatDateForInput } from "../../utils/helpers"
+formatDate
 const MemberDetail = () => {
-  const formatDate = (dateString) => {
-    const [year, month, day] = dateString.split("/")
-    return `${year}-${month}-${day}`
-  }
-
   const {
     mutate: updateMember,
     isLoading: LoadingUpdate,
@@ -31,11 +27,12 @@ const MemberDetail = () => {
       setValue("phone", member.phone || "")
       setValue("email", member.email || "")
       setValue("address", member.address || "")
-      setValue("birth", member.birth ? formatDate(member.birth) : "")
+      setValue("birth", member.birth ? formatDateForInput(member.birth) : "")
     }
   }, [member, setValue])
 
   if (isLoading) return <div>Loading...</div>
+  console.log(member.birth)
 
   const onSubmit = (data) => {
     const name = data.firstName + data.lastName
@@ -48,7 +45,7 @@ const MemberDetail = () => {
 
     updateMember(updatedData)
   }
-
+  console.log(member)
   return (
     <div id="accountInfoContent">
       <form className="accountInfo-form" onSubmit={handleSubmit(onSubmit)}>

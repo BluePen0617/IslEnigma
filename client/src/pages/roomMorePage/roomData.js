@@ -1,6 +1,7 @@
 export const rooms = [
   {
     roomTypeEng: "Grass Tempo",
+    price: 12000,
     roomType: "簡約帳篷 | 草原步調",
     roomSlogan: "擁抱自然簡約風，享受寧靜草原夜景",
     roomDesc:
@@ -26,6 +27,8 @@ export const rooms = [
   },
   {
     roomTypeEng: "Ocean Serenity",
+    price: 15000,
+
     roomType: "豪華帳棚 | 沉靜海洋",
     roomSlogan: "聆聽海浪聲，感受奢華露營體驗",
     roomDesc:
@@ -51,6 +54,8 @@ export const rooms = [
   },
   {
     roomTypeEng: "Island Trails",
+    price: 18000,
+
     roomType: "高級帳篷 | 島嶼蹤跡",
     roomSlogan: "探索島嶼秘境，高級舒適盡在此處",
     roomDesc:
@@ -76,6 +81,8 @@ export const rooms = [
   },
   {
     roomTypeEng: "Starry Dome",
+    price: 20000,
+
     roomType: "圓球帳篷 | 夢幻星空",
     roomSlogan: "仰望星空，倚看穹頂晨曦與夜色星空",
     roomDesc:
@@ -99,7 +106,7 @@ export const rooms = [
       "../../public/roomMorePage/room (8).jpg",
     ],
   },
-];
+]
 
 export const facilities = [
   { icon: "tv", text: "32吋 LED電視" },
@@ -129,4 +136,4 @@ export const facilities = [
   { icon: "umbrella", text: "雨傘" },
   { icon: "bowl-food", text: "一泊四食" },
   { icon: "map-location-dot", text: "贈送地圖" },
-];
+]

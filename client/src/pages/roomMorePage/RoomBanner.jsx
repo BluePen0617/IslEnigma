@@ -1,24 +1,24 @@
-import React, { useState, useEffect } from "react";
-import { Link } from "react-router-dom";
-import RainEffect from "./RainEffect";
+import React, { useState, useEffect } from "react"
+import { Link } from "react-router-dom"
+import RainEffect from "./RainEffect"
 
 const RoomBanner = () => {
-  const [isRaining, setIsRaining] = useState(false);
+  const [isRaining, setIsRaining] = useState(false)
 
   useEffect(() => {
     const randomWeatherChange = () => {
-      const shouldRain = Math.random() < 0.5;
-      setIsRaining(shouldRain);
-    };
+      const shouldRain = Math.random() < 0.5
+      setIsRaining(shouldRain)
+    }
 
     // 初始天氣
-    randomWeatherChange();
+    randomWeatherChange()
 
     // 每10秒改變一次天氣
-    const interval = setInterval(randomWeatherChange, 10000);
+    const interval = setInterval(randomWeatherChange, 10000)
 
-    return () => clearInterval(interval);
-  }, []);
+    return () => clearInterval(interval)
+  }, [])
 
   return (
     <div id="roomBanner" className={` ${isRaining ? "raining" : ""}`}>
@@ -90,7 +90,7 @@ const RoomBanner = () => {
         </div>
       </div>
     </div>
-  );
-};
+  )
+}
 
-export default RoomBanner;
+export default RoomBanner

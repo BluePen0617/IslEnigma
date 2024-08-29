@@ -16,7 +16,15 @@ const ticket_route = require("./routes/ticket_route")
 const { PORT } = require("./utils/config_env")
 
 app.use(express.urlencoded({ extended: true }))
-app.use(cors({ origin: "http://localhost:5173", credentials: true }))
+app.use(
+  cors({
+    origin: [
+      "https://localhost:5173",
+      "http://api.openweathermap.org/data/2.5/weather",
+    ],
+    credentials: true,
+  })
+)
 
 app.use(
   "/webhook",

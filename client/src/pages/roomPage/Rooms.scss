@@ -374,7 +374,7 @@
   }
 
   .quickModal {
-    position: fixed;
+    position: absolute;
     z-index: 1000;
     right: 5%;
     top: calc(50% + 60px);

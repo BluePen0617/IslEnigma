@@ -121,6 +121,7 @@ const changePassword = async (req, res) => {
   }
 }
 async function transformOrderData(orders) {
+  console.log(orders)
   const transformedData = await Promise.all(
     orders.map(async (order) => {
       const orderAmount = order.total_amount.toString()
@@ -138,10 +139,10 @@ async function transformOrderData(orders) {
               : null,
             quantity: item.quantity.toString(),
             orderPeople: {
-              customer: order.orderInfo.customer,
-              phone: order.orderInfo.phone_number,
-              address: order.orderInfo.address,
-              payment_method: order.orderInfo.payment_method,
+              customer: order.orderInfo?.customer,
+              phone: order.orderInfo?.phone_number,
+              address: order.orderInfo?.address,
+              payment_method: order.orderInfo?.payment_method,
             },
           }
 
@@ -167,7 +168,10 @@ async function transformOrderData(orders) {
 }
 
 function formatDate(date) {
-  return date.toISOString().split("T")[0].replace(/-/g, "/")
+  return date
+    .toLocaleString()
+    .replace(/-/g, "/")
+    .replace(/\s(上午|下午).*$/, "")
 }
 
 async function fetchType(readMethod, id) {

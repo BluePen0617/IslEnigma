@@ -1,17 +1,23 @@
-import React, { useEffect } from "react"
-import { useForm } from "react-hook-form"
-import axios from "axios"
+import React, { useState, useEffect } from "react"
+import { useForm, Controller } from "react-hook-form"
 import { useNavigate } from "react-router-dom"
 import { useCartItemsData } from "../../hooks/useCartItem"
-import { formatDate, SERVER_URL } from "../../utils/helpers"
 import { useMemberInfo } from "../../hooks/useMemberInfo"
+import { PaymentService } from "../../utils/paymentService"
+import Select from "react-select"
 
 const CheckOutPage = () => {
+  const [paymentMethod, setPaymentMethod] = useState({
+    value: "stripe",
+    label: "Stripe",
+  })
+  const [isPaymentMethodSelected, setIsPaymentMethodSelected] = useState(false) // 添加此状态
   const { data: memberData, isLoading: memberDataLoading } = useMemberInfo()
   const { data: cartData, isLoading: cartDataLoading } = useCartItemsData()
   const navigate = useNavigate()
 
   const {
+    control,
     register,
     handleSubmit,
     formState: { errors },
@@ -21,6 +27,7 @@ const CheckOutPage = () => {
       customer: "",
       phone_number: "",
       address: "",
+      payment_method: { value: "stripe", label: "Stripe" },
     },
   })
 
@@ -34,28 +41,38 @@ const CheckOutPage = () => {
     }
   }, [memberData, reset])
 
-  const handleCreatePayment = async (formData) => {
-    try {
-      const res = await axios.post(
-        `${SERVER_URL}/cart/create-checkout-session`,
-        {
-          data: cartData,
-          orderInfo: formData,
-        }
-      )
-      window.location.href = res.data.url
-    } catch (error) {
-      console.error("支付創建失敗:", error)
+  const onSubmit = (formData) => {
+    console.log(formData)
+    const updatedFormData = {
+      ...formData,
+      payment_method: formData.payment_method.value,
     }
+    console.log(updatedFormData)
+    const paymentService = new PaymentService(
+      formData.payment_method.value,
+      updatedFormData,
+      cartData
+    )
+    paymentService.pay()
   }
 
   if (memberDataLoading || cartDataLoading) {
     return <p>正在加載資料...</p>
   }
 
+  const options = [
+    {
+      value: "stripe",
+      label: "Stripe",
+      image: "/shoppingCart/stripe.png",
+    },
+    { value: "ecPay", label: "綠界科技", image: "/shoppingCart/ecpay.svg" },
+    { value: "linePay", label: "LinePay", image: "/lineLogo/line.png" },
+  ]
+
   return (
     <div className="checkout">
-      <form onSubmit={handleSubmit(handleCreatePayment)}>
+      <form onSubmit={handleSubmit(onSubmit)}>
         <div className="checkout-left">
           <div className="customer dropdown-section">
             <div className="title">
@@ -98,10 +115,70 @@ const CheckOutPage = () => {
             </div>
           </div>
         </div>
+
         <div className="checkout-right">
-          <button className="confirm-payment" type="submit">
+          <Controller
+            name="payment_method"
+            control={control}
+            render={({ field }) => (
+              <Select
+                {...field}
+                options={options}
+                onChange={(selectedOption) => {
+                  field.onChange(selectedOption)
+                  setPaymentMethod(selectedOption)
+                  setIsPaymentMethodSelected(true) // 设置为已选择付款方式
+                }}
+                value={paymentMethod}
+                getOptionLabel={(option) => (
+                  <div
+                    style={{
+                      display: "flex",
+                      justifyContent: "space-between",
+                      alignItems: "center",
+                      width: "155px",
+                      height: "20px",
+                      marginLeft: "-50px",
+                    }}
+                  >
+                    {option.image && (
+                      <img
+                        src={option.image}
+                        alt={option.label}
+                        style={{
+                          width: 30,
+                          height: 30,
+                          marginRight: 10,
+                          objectFit: "contain",
+                        }}
+                      />
+                    )}
+                    {option.label}
+                  </div>
+                )}
+                getOptionValue={(option) => option.value}
+                className="custom-select"
+              />
+            )}
+          />
+          {errors.paymentMethod && (
+            <p className="error-message">{errors.paymentMethod.message}</p>
+          )}
+          <button
+            className="confirm-payment"
+            type="submit"
+            disabled={!isPaymentMethodSelected}
+            style={{
+              backgroundColor: isPaymentMethodSelected
+                ? "transparent"
+                : "#e0e0e0",
+              cursor: isPaymentMethodSelected ? "pointer" : "not-allowed",
+              opacity: isPaymentMethodSelected ? 1 : 0.6,
+            }}
+          >
             確認付款
           </button>
+
           <button
             className="back-btn"
             type="button"

@@ -4,6 +4,7 @@ import { useEffect, useState } from "react"
 import axios from "axios"
 import useCartStore from "../../zustand/cartStore"
 import { useNavigate } from "react-router-dom"
+import { SERVER_URL } from "../../utils/helpers"
 const ShoppingSuccessPage = () => {
   const navigate = useNavigate()
   const location = useLocation()
@@ -11,6 +12,25 @@ const ShoppingSuccessPage = () => {
   const { cartItems, loading, fetchCartData } = useCartStore()
   const params = new URLSearchParams(location.search)
   const sessionIdParam = params.get("session_id")
+
+  useEffect(() => {
+    const searchParams = new URLSearchParams(window.location.search)
+    const transactionId = searchParams.get("transactionId")
+    const orderId = searchParams.get("orderId")
+    const checkPayMent = async () => {
+      const order_info = JSON.parse(localStorage.getItem("order_info"))
+      const res = await axios.post(
+        `${SERVER_URL}/cart/line-test/check-payment`,
+        {
+          transactionId,
+          orderId,
+          order_info,
+        }
+      )
+    }
+    if (transactionId) checkPayMent()
+    console.log(transactionId, orderId)
+  }, [])
 
   return (
     <>
@@ -30,10 +50,15 @@ const ShoppingSuccessPage = () => {
           <img src="/shoppingSuccess/yt-icon.png" alt="YouTube Icon" />
           <img src="/shoppingSuccess/ig-icon.png" alt="Instagram Icon" />
         </div>
-        <button className="btnOrder">查看訂單</button>
-        <button className="btnOrder">
-          <Link to="/cart">返回購物車</Link>
-        </button>
+
+        <Link to="/profile">
+          {" "}
+          <button className="btnOrder">查看訂單 </button>
+        </Link>
+
+        <Link to="/cart">
+          <button className="btnOrder">返回購物車</button>
+        </Link>
       </div>
     </>
   )

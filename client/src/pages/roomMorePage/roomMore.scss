@@ -766,6 +766,7 @@ $primary-color: #333;
           display: flex;
           justify-content: space-between;
           align-items: center;
+          gap: 8px;
 
           .roomMemo {
             font-style: italic;
@@ -1051,4 +1052,78 @@ $primary-color: #333;
   //   rgb(49, 124, 165),
   //   hsla(263, 25%, 52%, 1)
   // );
+
+//--------------------------
+
+.roomsPage {
+  position: relative;
+
+  &.modal-open {
+    &::before {
+      content: "";
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background-color: rgba(0, 0, 0, 0.2);
+      backdrop-filter: blur(3px);
+      z-index: 200;
+    }
+  }
+
+  .quickModal {
+    display: none; // 默認隱藏
+    position: fixed;
+    z-index: 1501;
+    transform: translate(-60%, -50%);
+    width: 600px;
+    background-color: rgba(255, 255, 255, 0.8078431373);
+    border-radius: 20px;
+    box-shadow: -5px 6px 4.2px rgba(0, 0, 0, 0.24),
+      inset -5px 6px 4.2px rgba(255, 255, 255, 0.5);
+    backdrop-filter: blur(4.8px);
+    overflow: hidden;
+    border: 1px solid #fffdf8;
+
+    @include responsive(mobile) {
+      width: 90%;
+      max-width: 600px;
+    }
+  }
+
+  &.modal-open .quickModal {
+    display: block; // 當模態框打開時顯示
+  }
+}
+
+// .roomItem.even .roomsPage .quickModal {
+//   position: absolute;
+//   z-index: 1000;
+//   right: 50%;
+//   top: -20vh;
+//   width: 600px;
+//   background-color: rgba(255, 255, 255, 0.8078431373);
+//   border-radius: 20px;
+//   box-shadow: -5px 6px 4.2px rgba(0, 0, 0, 0.24);
+//   box-shadow: inset -5px 6px 4.2px rgba(255, 255, 255, 0.5);
+//   backdrop-filter: blur(4.8px);
+//   overflow: hidden;
+//   border: 1px solid #fffdf8;
+// }
+
+// .roomItem.odd .roomsPage .quickModal {
+//   position: absolute;
+//   z-index: 1000;
+//   left: 50%;
+//   top: -20vh;
+//   width: 600px;
+//   background-color: rgba(255, 255, 255, 0.8078431373);
+//   border-radius: 20px;
+//   box-shadow: -5px 6px 4.2px rgba(0, 0, 0, 0.24);
+//   box-shadow: inset -5px 6px 4.2px rgba(255, 255, 255, 0.5);
+//   backdrop-filter: blur(4.8px);
+//   overflow: hidden;
+//   border: 1px solid #fffdf8;
+// }
 }

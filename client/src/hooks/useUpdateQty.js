@@ -4,9 +4,15 @@ import { SERVER_URL } from "../utils/helpers"
 
 const updateQty = async (data) => {
   const { id, quantity } = data
-  const res = await axios.put(`${SERVER_URL}/cart/${id}`, {
-    quantity,
-  })
+  const res = await axios.put(
+    `${SERVER_URL}/cart/${id}`,
+    {
+      quantity,
+    },
+    {
+      withCredentials: true,
+    }
+  )
   return res.data
 }
 

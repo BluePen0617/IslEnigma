@@ -87,6 +87,7 @@ model order_item {
   check_in_date  DateTime?      @db.Timestamp(6)
   check_out_date DateTime?      @db.Timestamp(6)
   people_count   Int?
+  room_count   Int?
   quantity       Int
   booked_date    DateTime?      @db.Timestamp(6)
   valid_date     DateTime?      @db.Timestamp(6)

@@ -6,7 +6,7 @@ import { FaCircleArrowLeft } from "react-icons/fa6"
 import { slidesData } from "./data/slidesData"
 import FeatureModal from "./FeatureModal"
 import { featureModalData } from "./data/featureModalData"
-
+import { DateRangePicker } from "react-date-range"
 const Feature = () => {
   const [currentIndex, setCurrentIndex] = useState(0)
   const [modalData, setModalData] = useState({})

@@ -7,9 +7,13 @@ import { useAuthContext } from "../context/AuthContext"
 
 export const logout = async (memberData) => {
   try {
-    const res = await axios.post(`${SERVER_URL}/member/logout`, {
-      withCredentials: true,
-    })
+    const res = await axios.post(
+      `${SERVER_URL}/member/logout`,
+      {},
+      {
+        withCredentials: true,
+      }
+    )
 
     return res.data
   } catch (err) {
