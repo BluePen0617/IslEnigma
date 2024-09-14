@@ -396,9 +396,17 @@
       &:hover {
         background: linear-gradient(
           to right,
-          rgb(49, 124, 165, 0.8),
+          rgba(49, 124, 165, 0.504),
           hsla(263, 25%, 52%, 0.8)
         );
+      }
+      &--disabled {
+        background: linear-gradient(
+          to right,
+          rgba(49, 124, 165, 0.504),
+          hsla(263, 25%, 52%, 0.8)
+        );
+        cursor: not-allowed;
       }
     }
 

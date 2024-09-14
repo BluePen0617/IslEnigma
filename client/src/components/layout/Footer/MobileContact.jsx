@@ -6,13 +6,17 @@ const MobileContact = () => {
         <a href="https://line.me/ti/g/0GZNCX9-lk" target="_blank">
           <img src="/icon/line.png" alt="line icon" />
         </a>
-        {/* <a href="https://x.com/mofa_taiwan?lang=zh-Hant" target="_blank">
-          <img src="/icon/twitter.png" alt="twitter icon" />
-        </a> */}
-        <a href="https://www.facebook.com/share/g/agbw7SPD4oomiRYg/" target="_blank">
+
+        <a
+          href="https://www.facebook.com/share/g/agbw7SPD4oomiRYg/"
+          target="_blank"
+        >
           <img src="/icon/fb.png" alt="facebook icon" />
         </a>
-        <a href="https://www.instagram.com/universal_studiojapanfun?igsh=dDZ0aGt2aWxiYmE3" target="_blank">
+        <a
+          href="https://www.instagram.com/universal_studiojapanfun?igsh=dDZ0aGt2aWxiYmE3"
+          target="_blank"
+        >
           <img src="/icon/ig.png" alt="instagram icon" />
         </a>
         <a href="https://emailfuture.com/" target="_blank">

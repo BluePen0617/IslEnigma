@@ -14,7 +14,6 @@ const ShoppingCartPage = () => {
   const { data, isLoading } = useCartItemsData()
   const [cartData, setCartData] = useState([])
   const { member } = useAuthContext()
-  const location = useLocation()
 
   const handleDelete = async (itemId) => {
     await axios.delete(`http://localhost:3001/cart/${itemId}`)
@@ -76,6 +75,7 @@ const ShoppingCartPage = () => {
       setCartData(localCartItem)
     }
   }, [member])
+
   if (isLoading) return <p>Loading...</p>
   return (
     <div className="shoppingCart">
@@ -113,11 +113,21 @@ const ShoppingCartPage = () => {
                 : 0}
             </span>
           </div>
-          <Link to="checkout" className="buyNow">
+          <Link
+            to={cartData.length > 0 ? "checkout" : "#"}
+            className={`buyNow ${
+              cartData.length === 0 ? "buyNow--disabled" : ""
+            }`}
+            onClick={
+              cartData.length === 0 ? (e) => e.preventDefault() : undefined
+            }
+          >
             前往購買手續
             <img src={arrow} alt="箭頭" className="breadcrumbArrow" />
           </Link>
-          <button className="continueShopping">繼續購物</button>
+          <Link to="rooms">
+            <button className="continueShopping">繼續購物</button>
+          </Link>
         </div>
         <div className="customerService">
           <div className="customerAlerm">

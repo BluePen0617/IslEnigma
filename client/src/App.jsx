@@ -36,6 +36,8 @@ function App() {
     <>
       <Routes>
         <Route path="/" element={<Layout />}>
+          <Route index element={<Navigate to="/homepage" replace />} />
+
           <Route
             path="/register"
             element={member ? <Navigate to="/rooms" /> : <Register />}

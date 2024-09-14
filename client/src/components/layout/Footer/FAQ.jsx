@@ -6,9 +6,7 @@ const FAQ = () => {
         <a href="/infoEvent/infoFAQPage" target="_blank">
           <img src="/icon/question.png" alt="question icon" />
         </a>
-        {/* <a href="https://www.google.com/" target="_blank">
-          <img src="/icon/bag.png" alt="bag icon" />
-        </a> */}
+
         <a href="/ticketpage" target="_blank">
           <img src="/icon/cart.png" alt="cart icon" />
         </a>
@@ -20,7 +18,7 @@ const FAQ = () => {
         </a>
       </div>
     </div>
-  );
-};
+  )
+}
 
-export default FAQ;
+export default FAQ
