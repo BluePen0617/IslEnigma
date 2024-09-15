@@ -2,14 +2,16 @@ const stripe = require("stripe")(process.env.STRIPE_PRIVATE_KEY)
 
 const create_checkout_session = async (req, res) => {
   const { data, orderInfo } = req.body
-  const order_id = data.order_id
+  const order_id = String(data.order_id)
+
+  console.log(order_id)
   const order_info_json = JSON.stringify(orderInfo)
 
   try {
     const session = await stripe.checkout.sessions.create({
       //metadata只接受string
       metadata: {
-        order_id,
+        order_id: order_id,
         order_info: order_info_json,
       },
       payment_method_types: ["card"],

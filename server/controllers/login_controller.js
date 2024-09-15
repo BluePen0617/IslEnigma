@@ -105,9 +105,10 @@ const login_controller = {
         id: member.member_id,
       }
 
+      const { password: pwd, ...memberData } = member
       const cookieToken = await generateToken.generateToken(payload)
       await cookieHelpers.setAuthCookie(res, cookieToken)
-      res.status(200).json({ message: `歡迎回來! ${member.name}!`, member })
+      res.status(200).json({ message: `歡迎回來! ${member.name}!`, memberData })
     } catch (error) {
       console.error("Login error:", error)
       res.status(500).json({ error: "Server error" })

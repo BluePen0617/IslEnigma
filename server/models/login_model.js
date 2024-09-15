@@ -1,6 +1,6 @@
 //@author: 許哲誠
-const { PrismaClient } = require('@prisma/client');
-const prisma = new PrismaClient();
+const { PrismaClient } = require("@prisma/client")
+const prisma = new PrismaClient()
 
 const login_Model = {
   read: async (account) => {
@@ -9,12 +9,12 @@ const login_Model = {
         where: {
           account: account,
         },
-      });
-      return member;
+      })
+      return member
     } catch (error) {
-      console.log(error);
-      throw error;
+      console.log(error)
+      throw error
     }
-  }
-};
-module.exports = login_Model;
+  },
+}
+module.exports = login_Model

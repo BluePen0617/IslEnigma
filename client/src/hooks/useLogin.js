@@ -33,11 +33,11 @@ export const useLogin = () => {
   return useMutation({
     mutationFn: login,
     onSuccess: (data) => {
-      const { message, member } = data
+      const { message, memberData } = data
       toast(message)
-      localStorage.setItem("member", JSON.stringify(member))
+      localStorage.setItem("member", JSON.stringify(memberData))
       localStorage.removeItem("cart")
-      setMember(member)
+      setMember(memberData)
       navigate("/homepage")
     },
     onError: (error) => {
