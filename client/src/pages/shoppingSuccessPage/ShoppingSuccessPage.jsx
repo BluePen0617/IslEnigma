@@ -29,7 +29,6 @@ const ShoppingSuccessPage = () => {
       )
     }
     if (transactionId) checkPayMent()
-    console.log(transactionId, orderId)
   }, [])
 
   return (
