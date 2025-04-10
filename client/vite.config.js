@@ -14,11 +14,15 @@ export default defineConfig({
   build: {
     outDir: "dist"
   },
-  // 👇 這段是為了讓前端路由如 /homepage 可以在 Vercel 正常運作
   resolve: {
     alias: {
       "@": path.resolve(__dirname, "src"),
     },
+  },
+  // 🔥 這是你目前缺少的最關鍵設定（讓 /homepage 不會 404）
+  preview: {
+    // 給 `vercel build` 用
+    fallback: true
   }
 })
 
